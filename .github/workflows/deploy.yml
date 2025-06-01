@@ -1,0 +1,48 @@
+name: Build & Deploy SpringBoot Backend Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Build JAR with Maven
+      run: mvn clean package - DskipTests
+
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh 
+        echo "${{ secrets.VM_SECRET_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Copy JAR to VM via SCP
+      run: |
+        scp target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/koa.jar
+
+    - name: Copy Dockerfile to VM via SCP
+      run: |
+        scp Dockerfile ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/Dockerfile
+
+    - name: SSH and Run Docker on VM
+      run: |
+        ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
+          docker stop koa-backend || true
+          docker rm koa-backend || true
+          docker rmi koa-image || true
+          docker build -t koa-image -f Dockerfile .
+          docker run -d --name koa-backend -p 8080:8080 koa-image
+        EOF
