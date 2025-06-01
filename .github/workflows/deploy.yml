@@ -29,7 +29,6 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
 
-    #copying
     - name: Copy JAR to VM via SCP
       run: |
         scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/koa.jar
