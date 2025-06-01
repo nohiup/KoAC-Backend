@@ -44,5 +44,5 @@ jobs:
           docker rm koa-backend || true
           docker rmi koa-image || true
           docker build -t koa-image -f Dockerfile .
-          docker run -d --name koa-backend -p 8080:8080 koa-image
+          docker run -d --name koa-backend -p 8080:8080 -v koa-data:/app/data koa-image
         EOF
