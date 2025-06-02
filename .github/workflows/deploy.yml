@@ -36,7 +36,7 @@ jobs:
 
     - name: Copy Dockerfile to VM via SCP
       run: |
-        scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no Dockerfile ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/Dockerfile
+        scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no koaguide/Dockerfile ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/Dockerfile
 
     - name: SSH and Run Docker on VM
       run: |
