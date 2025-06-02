@@ -51,6 +51,10 @@ services:
     depends_on:
       - prometheus
       - loki
+
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+
     environment:
       - GF_SERVER_ROOT_URL=https://koa.australiaeast.cloudapp.azure.com/grafana/
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
