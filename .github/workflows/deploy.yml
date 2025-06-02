@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,12 +38,38 @@ jobs:
       run: |
         scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no koaguide/Dockerfile ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/Dockerfile
 
-    - name: SSH and Run Docker on VM
+    - name: SSH and Build Docker image on VM
       run: |
         ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
           docker stop koa-backend || true
           docker rm koa-backend || true
           docker rmi koa-image || true
           docker build -t koa-image -f Dockerfile .
-          docker run -d --name koa-backend -p 8080:8080 -v koa-data:/app/data koa-image
         EOF
+
+  deploy:
+    runs-on: ubuntu-latest
+    neeeds: build
+    steps:
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh 
+          echo "${{ secrets.VM_SECRET_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy monitoring folder to VM
+        run: |
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r monitoring ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}
+
+      - name: SSH run Docker compose
+        run: |
+          ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
+            cd /home/${{ secrets.VM_USER }}
+            docker-compose down
+            docker-compose up -d --build
+          EOF
+
+
+# docker run -d --name koa-backend -p 8080:8080 -v koa-data:/app/data koa-image (for running container)
+        
