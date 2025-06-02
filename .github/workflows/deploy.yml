@@ -32,7 +32,7 @@ jobs:
 
     - name: Copy JAR to VM via SCP
       run: |
-        scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/koa.jar
+        scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no koaguide/target/*.jar ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/koa.jar
 
     - name: Copy Dockerfile to VM via SCP
       run: |
