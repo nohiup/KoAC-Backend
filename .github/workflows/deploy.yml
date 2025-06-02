@@ -49,7 +49,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    neeeds: build
+    needs: build
     steps:
       - name: Setup SSH
         run: |
