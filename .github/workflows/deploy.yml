@@ -73,6 +73,7 @@ jobs:
             docker-compose up -d --build
           EOF
 
+#re-run deploying
 
 # docker run -d --name koa-backend -p 8080:8080 -v koa-data:/app/data koa-image (for running container)
         
