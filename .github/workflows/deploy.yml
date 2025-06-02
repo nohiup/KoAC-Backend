@@ -53,7 +53,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        
+
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh 
@@ -68,7 +68,7 @@ jobs:
       - name: SSH run Docker compose
         run: |
           ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
-            cd /home/${{ secrets.VM_USER }}
+            cd /home/${{ secrets.VM_USER }}/monitoring
             docker-compose down
             docker-compose up -d --build
           EOF
