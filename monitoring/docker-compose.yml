@@ -35,6 +35,9 @@ services:
     depends_on:
       - prometheus
       - loki
+    environment:
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
 
   loki:
     image: grafana/loki:latest
